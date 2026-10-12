@@ -22,6 +22,10 @@ $gw = $ipv4 -replace "\.\d+$",".1"
 # may need diff options for most recent fw?
 $opts = "-oHostKeyAlgorithms=+ssh-dss -oKexAlgorithms=+diffie-hellman-group1-sha1 -oMACs=+hmac-sha1 -oStrictHostKeyChecking=false"
 
+# OpenSSH 9+ scp defaults to SFTP, which the router lacks; -O forces the old scp protocol
+$scpO = ""
+if ("$(ssh -V 2>&1)" -match "OpenSSH\D*(\d+)" -and [int]$matches[1] -ge 9) { $scpO = "-O" }
+
 # SSH & SCP strings
 # don't forget semicolons and (probably) end-quotes
 # mtd-write gives the wrong usage info. The -d argument does not work.
@@ -49,7 +53,7 @@ write-host ''
 
 # scp -oHostKeyAlgorithms=+ssh-dss -oKexAlgorithms=+diffie-hellman-group1-sha1 -oMACs=+hmac-sha1 -oStrictHostKeyChecking=false new_cfe.bin mtd-write FW_RT_AC68U_30043763626.trx admin@192.168.29.1:~/
 # holy shit this is cleaner
-cmd /c "scp $opts $push_files admin@$gw`:~/"
+cmd /c "scp $scpO $opts $push_files admin@$gw`:~/"
 
 $postSCPpreSSH = @"
 

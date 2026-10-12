@@ -23,6 +23,10 @@ $gw = $ipv4 -replace "\.\d+$",".1"
 # may need diff options for most recent fw?
 $opts = "-oHostKeyAlgorithms=+ssh-dss -oKexAlgorithms=+diffie-hellman-group1-sha1 -oMACs=+hmac-sha1 -oStrictHostKeyChecking=false"
 
+# OpenSSH 9+ scp defaults to SFTP, which the router lacks; -O forces the old scp protocol
+$scpO = ""
+if ("$(ssh -V 2>&1)" -match "OpenSSH\D*(\d+)" -and [int]$matches[1] -ge 9) { $scpO = "-O" }
+
 # SSH & SCP strings
 # don't forget semicolons and (probably) end-quotes
 $cmds = @"
@@ -37,7 +41,7 @@ $cmds = $cmds -replace "\n",""
 # ssh -oHostKeyAlgorithms=+ssh-dss -oKexAlgorithms=+diffie-hellman-group1-sha1 -oMACs=+hmac-sha1 -oStrictHostKeyChecking=false admin@192.168.29.1 "cat /dev/mtd0 > original_cfe.bin; ls -al"
 # scp -oHostKeyAlgorithms=+ssh-dss -oKexAlgorithms=+diffie-hellman-group1-sha1 -oMACs=+hmac-sha1 -oStrictHostKeyChecking=false admin@192.168.29.1:~/original_cfe.bin ./original_cfe.bin
 cmd /c "ssh $opts admin@$gw $cmds"
-cmd /c "scp $opts admin@$gw`:~/original_cfe.bin ./original_cfe.bin"
+cmd /c "scp $scpO $opts admin@$gw`:~/original_cfe.bin ./original_cfe.bin"
 
 $postdownload = @"
 
