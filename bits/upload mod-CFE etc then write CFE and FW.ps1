@@ -24,11 +24,11 @@ $opts = "-oHostKeyAlgorithms=+ssh-dss -oKexAlgorithms=+diffie-hellman-group1-sha
 
 # SSH & SCP strings
 # don't forget semicolons and (probably) end-quotes
+# mtd-write gives the wrong usage info. The -d argument does not work.
 $cmds = @"
 "
 chmod 777 mtd-write; 
 ls -al; 
-# mtd-write gives the wrong usage info. The -d argument does not work.
 ./mtd-write new_cfe.bin boot; 
 mtd-write2 FW_RT_AC68U_30043763626.trx linux
 "
