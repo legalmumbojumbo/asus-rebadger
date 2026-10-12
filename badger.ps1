@@ -43,7 +43,7 @@ if($reopen){
 	write-host ''
 	pause
 	# Relaunch as an elevated process:
-	Start-Process powershell.exe "-File",('"{0}"' -f $MyInvocation.MyCommand.Path) -Verb RunAs
+	Start-Process powershell.exe "-ExecutionPolicy","Bypass","-File",('"{0}"' -f $MyInvocation.MyCommand.Path) -Verb RunAs
 	exit
 }
 
